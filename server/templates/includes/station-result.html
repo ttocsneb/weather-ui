@@ -1,0 +1,6 @@
+<ul>
+  {{- range $i, $v := .Results -}}
+  <li><a href="{{ $v.Url }}">{{ $v.Name }}</a></li>
+  {{- end -}}
+</ul>
+

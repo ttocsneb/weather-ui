@@ -1,0 +1,28 @@
+{{- if .Bad -}}
+<p>Could not find “{{ .Query }}”</p>
+{{- else -}}
+<ul>
+  {{- range $i, $v := .Results -}}
+  <li>
+    {{- if $v.District -}}
+    <a 
+      href="{{ $.Config.Base }}/region/
+      {{- encode $v.Country }}/
+      {{- encode $v.Region }}/
+      {{- encode $v.City }}/
+      {{- encode $v.District }}/">
+      {{- $v.District }}, {{ $v.City }}, {{ $v.Region }}, {{ $v.Country -}}
+    </a>
+    {{- else -}}
+    <a 
+      href="{{ $.Config.Base }}/region/
+      {{- encode $v.Country }}/
+      {{- encode $v.Region }}/
+      {{- encode $v.City }}/">
+      {{- $v.City }}, {{ $v.Region }}, {{ $v.Country -}}
+    </a>
+    {{- end -}}
+  </li>
+  {{- end -}}
+</ul>
+{{- end -}}

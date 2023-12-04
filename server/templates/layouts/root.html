@@ -1,0 +1,116 @@
+{{- define "title" -}}
+<title>Weather</title>
+{{- end -}}
+
+{{- define "content" -}}
+  <h1>Weather</h1>
+
+  <form method="POST">
+    <input type="text" name="query" placeholder="City"/>
+    <button hx-post="{{ $.Config.Base }}/region/search/"
+            hx-trigger="click"
+            hx-target="#search-results"
+            hx-swap="innerHTML">
+      Search
+    </button>
+  </form>
+  <div id="search-results"></div>
+  <div id="location"></div>
+  <button id="nearest-btn"
+          hx-get="{{ $.Config.Base }}/location/nearest/?estimate=true"
+          hx-target="#nearest"
+          hx-swap="innerHTML"
+          style="display: none;">
+    View Nearest Station
+  </button>
+  <div id="nearest"></div>
+
+<script>
+  var loc = document.getElementById("location");
+  var btn = document.getElementById("nearest-btn");
+  var found_loc = false;
+  var fetched_estimate = false;
+
+  function populateLoc(data, params) {
+    loc.outerHTML = `<div 
+        id="location" 
+        hx-ext="sse" 
+        sse-connect="{{ .Config.Base }}/location/conditions/updates/?${params}" 
+        sse-swap="message">
+          ${data}
+      </div>`; 
+    loc = document.getElementById("location");
+    htmx.process(loc);
+    btn.setAttribute("hx-get", `{{ .Config.Base }}/location/nearest/?${params}`);
+    btn.style.display = "block";
+    htmx.process(btn);
+  }
+
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(onPosition, onFail);
+    } else {
+      onFail({
+        code: 2,
+        PERMISSION_DENIED: 1,
+        POSITION_UNAVAILABLE: 2,
+        TIMEOUT: 3,
+      });
+    }
+
+    setTimeout(() => {
+      if (!found_loc) {
+      onFail({
+        code: 3,
+        PERMISSION_DENIED: 1,
+        POSITION_UNAVAILABLE: 2,
+        TIMEOUT: 3,
+      });
+      }
+    }, 1E3);
+  }
+
+  function onPosition(position) {
+    var lat = position.coords.latitude;
+    var lon = position.coords.longitude;
+    found_loc = true;
+
+    fetch("{{ .Config.Base }}/location/conditions/?" + new URLSearchParams({
+        lat,
+        lon,
+      })) 
+      .then(response => response.text())
+      .then(data => { 
+        let params = new URLSearchParams({lat, lon});
+        populateLoc(data, params)
+      });
+  }
+  function onFail(fail) {
+    if (!found_loc) {
+      if (fetched_estimate) {
+        return;
+      }
+      fetched_estimate = true;
+      fetch("{{ .Config.Base }}/location/conditions/?estimate=true") 
+        .then(response => response.text())
+        .then(data => populateLoc(data, "estimate=true"));
+    } else {
+      if (fail.code == fail.PERMISSION_DENIED) {
+        loc.innerHTML = `<p>Not allowed to use geolocation</p>`
+      }
+      if (fail.code == fail.POSITION_UNAVAILABLE) {
+        loc.innerHTML = `<p>Unable to use geolocation: not available</p>`
+      }
+      if (fail.code == fail.TIMEOUT) {
+        loc.innerHTML = `<p>Unable to use geolocation: timeout</p>`
+      }
+    }
+    console.log(fail);
+  }
+  getLocation();
+</script>
+
+{{- end -}}
+
+{{- template "base.html" . -}}
+

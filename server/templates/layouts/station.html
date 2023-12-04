@@ -1,0 +1,24 @@
+{{- define "title" -}}
+<title>{{ .Info.District }} {{ .Info.City }} Station - {{ .Info.Station }}</title>
+{{- end -}}
+
+{{- define "content" -}}
+  <h1>{{ .Info.District }} {{ .Info.City }} Station - {{ .Info.Station }}</h1>
+
+  <ul>
+    <li>{{ .Info.Make }} {{ .Info.Model }} &mdash; {{ .Info.Software }} {{ .Info.Version }}</li>
+    <li>{{ .Info.City }}, {{ .Info.Region }}, {{ .Info.Country }}</li>
+  </ul>
+
+  <div hx-ext="sse" 
+       {{ if .Info.RapidWeather -}}
+       sse-connect="{{ .Config.Base }}/station/{{ .Conditions.Server }}/{{ .Conditions.Station }}/updates/rapid/" 
+       {{- else -}}
+       sse-connect="{{ .Config.Base }}/station/{{ .Conditions.Server }}/{{ .Conditions.Station }}/updates/" 
+       {{- end }}
+       sse-swap="message">
+    {{- template "station-update.html" . -}}
+  </div>
+{{- end -}}
+
+{{- template "base.html" . -}}

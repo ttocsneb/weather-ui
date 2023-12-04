@@ -1,0 +1,22 @@
+{{- define "title" -}}
+<title>Region</title>
+{{- end -}}
+
+{{- define "content" -}}
+  <h1>
+    {{- if .District -}}{{ .District }}, {{ end -}}
+    {{ .City }}, {{ .Region }}, {{ .Country }}
+  </h1>
+
+  <div hx-ext="sse" 
+       {{ if .District -}}
+       sse-connect="{{ .Config.Base }}/region/{{ encode .Country }}/{{ encode .Region }}/{{ encode .City }}/{{ encode .District }}/updates/" 
+       {{- else -}}
+       sse-connect="{{ .Config.Base }}/region/{{ encode .Country }}/{{ encode .Region }}/{{ encode .City }}/updates/" 
+       {{- end }}
+       sse-swap="message">
+    {{- template "region-update.html" . -}}
+  </div>
+{{- end -}}
+
+{{- template "base.html" . -}}

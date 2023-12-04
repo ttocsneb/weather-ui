@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {{- block "title" . -}}<title>{{ .Title }}</title>{{- end -}}
+    {{- block "header" . -}}
+    {{- end -}}
+  </head>
+  <body>
+    <script src="https://unpkg.com/htmx.org@1.9.8" 
+            crossorigin="anonymous" ></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/sse.js" 
+            crossorigin="anonymous" ></script>
+
+    {{- block "content" . -}} 
+    {{- end -}}
+  </body>
+</html>
