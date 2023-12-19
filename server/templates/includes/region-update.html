@@ -1,22 +1,22 @@
 <ul>
   {{- if .Conditions.temp -}}
     {{- with $sensor := .Conditions.temp -}}
-      <li>Temperature &mdash; {{ $sensor.Value }}{{ $sensor.Unit }}</li>
+      <li>Temperature &mdash; {{ round $sensor.Value }}{{ $sensor.Unit }}</li>
     {{- end -}}
   {{- end -}}
   {{- if .Conditions.humidity -}}
     {{- with $sensor := .Conditions.humidity -}}
-      <li>Humidity &mdash; {{ $sensor.Value }}{{ $sensor.Unit }}</li>
+      <li>Humidity &mdash; {{ round $sensor.Value }}{{ $sensor.Unit }}</li>
     {{- end -}}
   {{- end -}}
   {{- if .Conditions.barom -}}
     {{- with $sensor := .Conditions.barom -}}
-      <li>Pressure &mdash; {{ $sensor.Value }} {{ $sensor.Unit }}</li>
+      <li>Pressure &mdash; {{ round $sensor.Value 4 }} {{ $sensor.Unit }}</li>
     {{- end -}}
   {{- end -}}
   {{- if .Conditions.dewpoint -}}
     {{- with $sensor := .Conditions.dewpoint -}}
-      <li>Dewpoint &mdash; {{ $sensor.Value }}{{ $sensor.Unit }}</li>
+      <li>Dewpoint &mdash; {{ round $sensor.Value }}{{ $sensor.Unit }}</li>
     {{- end -}}
   {{- end -}}
   {{- if .Conditions.uv -}}
@@ -26,17 +26,17 @@
   {{- end -}}
   {{- if index .Conditions "rain-1h" -}}
     {{- with $sensor := index .Conditions "rain-1h" -}}
-      <li>Rain Hour &mdash; {{ $sensor.Value }}{{ $sensor.Unit }}</li>
+      <li>Rain Hour &mdash; {{ round $sensor.Value 2 }}{{ $sensor.Unit }}</li>
     {{- end -}}
   {{- end -}}
   {{- if .Conditions.dailyrain -}}
     {{- with $sensor := .Conditions.dailyrain -}}
-      <li>Rain Day &mdash; {{ $sensor.Value }}{{ $sensor.Unit }}</li>
+      <li>Rain Day &mdash; {{ round $sensor.Value 2 }}{{ $sensor.Unit }}</li>
     {{- end -}}
   {{- end -}}
   {{- if .Conditions.windspd -}}
     {{- with $sensor := .Conditions.windspd -}}
-    <li>Wind &mdash; {{ $sensor.Value }} {{ $sensor.Unit }}
+    <li>Wind &mdash; {{ round $sensor.Value }} {{ $sensor.Unit }}
     {{- end }} at {{ with $sensor := index .Conditions.winddir -}}
       {{ $sensor.Value }} {{ $sensor.Unit }}
     {{- end -}}
@@ -44,25 +44,25 @@
   {{- end -}}
   {{- if index .Conditions "windspd-avg2m" -}}
     {{- with $sensor := index .Conditions "windspd-avg2m" -}}
-    <li>Wind Average 2m &mdash; {{ $sensor.Value }} {{ $sensor.Unit }}
+    <li>Wind Average 2m &mdash; {{ round $sensor.Value }} {{ $sensor.Unit }}
     {{- end }} at {{ with $sensor := index .Conditions "winddir-avg2m" -}}
-      {{ $sensor.Value }} {{ $sensor.Unit }}
+      {{ round $sensor.Value }} {{ $sensor.Unit }}
+    {{- end -}}
+    </li>
+  {{- end -}}
+  {{- if index .Conditions "windspd-avg10m" -}}
+    {{- with $sensor := index .Conditions "windspd-avg10m" -}}
+    <li>Wind Average 10m &mdash; {{ round $sensor.Value }} {{ $sensor.Unit }}
+    {{- end }} at {{ with $sensor := index .Conditions "winddir-avg10m" -}}
+      {{ round $sensor.Value }} {{ $sensor.Unit }}
     {{- end -}}
     </li>
   {{- end -}}
   {{- if index .Conditions "windgustspd-2m" -}}
     {{- with $sensor := index .Conditions "windgustspd-2m" -}}
-    <li>Wind Gust 2m &mdash; {{ $sensor.Value }} {{ $sensor.Unit }}
+    <li>Wind Gust 2m &mdash; {{ round $sensor.Value }} {{ $sensor.Unit }}
     {{- end }} at {{ with $sensor := index .Conditions "windgustdir-2m" -}}
-      {{ $sensor.Value }} {{ $sensor.Unit }}
-    {{- end -}}
-    </li>
-  {{- end -}}
-  {{- if index .Conditions "windgustspd-10m" -}}
-    {{- with $sensor := index .Conditions "windgustspd-10m" -}}
-    <li>Wind Gust 10m &mdash; {{ $sensor.Value }} {{ $sensor.Unit }}
-    {{- end }} at {{ with $sensor := index .Conditions "windgustdir-10m" -}}
-      {{ $sensor.Value }} {{ $sensor.Unit }}
+      {{ round $sensor.Value }} {{ $sensor.Unit }}
     {{- end -}}
     </li>
   {{- end -}}

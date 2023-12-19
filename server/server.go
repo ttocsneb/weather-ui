@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -33,6 +34,57 @@ func makeDict(values ...any) (map[string]any, error) {
 	return dict, nil
 }
 
+func round(values ...any) (string, error) {
+	var places int
+	if len(values) == 0 {
+		return "", errors.New("Needs at least number")
+	}
+	if len(values) == 1 {
+		places = 0
+	} else {
+		val := values[1]
+		switch val.(type) {
+		case int:
+			places = val.(int)
+		case float32:
+			places = int(val.(float32))
+		case float64:
+			places = int(val.(float64))
+		case string:
+			flt, err := strconv.ParseFloat(val.(string), 64)
+			if err != nil {
+				return "", err
+			}
+			places = int(flt)
+		default:
+			return "", errors.New("Number is needed for places")
+		}
+	}
+
+	val := values[0]
+	var value float64
+	switch val.(type) {
+	case int:
+		value = float64(val.(int))
+	case float32:
+		value = float64(val.(float32))
+	case float64:
+		value = val.(float64)
+	case string:
+		flt, err := strconv.ParseFloat(val.(string), 64)
+		if err != nil {
+			return "", err
+		}
+		value = flt
+	default:
+		return "", errors.New("Number is needed for round")
+	}
+
+	multiplier := math.Pow10(places)
+	value = float64(int(value*multiplier+0.5)) / multiplier
+	return fmt.Sprint(value), nil
+}
+
 func loadTemplates() error {
 	layouts, err := ReadDirRecursive(templFiles, "templates/layouts")
 	includes, err := ReadDirRecursive(templFiles, "templates/includes")
@@ -44,6 +96,7 @@ func loadTemplates() error {
 	funcMap := template.FuncMap{
 		"dict":   makeDict,
 		"encode": util.EncodeURIString,
+		"round":  round,
 	}
 
 	for _, layout := range layouts {
